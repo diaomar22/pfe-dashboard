@@ -10,19 +10,142 @@ import plotly.graph_objects as go
 st.set_page_config(
     page_title="PFE - IPI Mauritanie",
     page_icon=None,
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
+# ============================================================
+# STYLE GLOBAL - look premium
+# ============================================================
 st.markdown("""
 <style>
+    /* Container principal */
     .main .block-container {
         padding-top: 2rem;
         padding-bottom: 3rem;
-        max-width: 1200px;
+        max-width: 1300px;
     }
-    h1 { font-weight: 600; }
-    h2 { font-weight: 600; margin-top: 1.5rem; }
-    h3 { font-weight: 500; }
+
+    /* Typographie */
+    h1 {
+        font-weight: 700;
+        color: #0d1b2a;
+        letter-spacing: -0.5px;
+    }
+    h2 {
+        font-weight: 600;
+        color: #1f3a68;
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e8ecf3;
+    }
+    h3 {
+        font-weight: 600;
+        color: #2c4566;
+    }
+
+    /* Cartes KPI à dégradé */
+    .kpi-card {
+        background: linear-gradient(135deg, #1f3a68 0%, #2c5282 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(31, 58, 104, 0.25);
+        text-align: left;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card.gold {
+        background: linear-gradient(135deg, #b08742 0%, #d4a157 100%);
+        box-shadow: 0 4px 20px rgba(176, 135, 66, 0.25);
+    }
+    .kpi-card.burgundy {
+        background: linear-gradient(135deg, #8b2635 0%, #b8344a 100%);
+        box-shadow: 0 4px 20px rgba(139, 38, 53, 0.25);
+    }
+    .kpi-card.teal {
+        background: linear-gradient(135deg, #2d6a5f 0%, #3d8a7a 100%);
+        box-shadow: 0 4px 20px rgba(45, 106, 95, 0.25);
+    }
+    .kpi-card .kpi-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        opacity: 0.85;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .kpi-card .kpi-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.3rem;
+    }
+    .kpi-card .kpi-sub {
+        font-size: 12px;
+        opacity: 0.8;
+        font-style: italic;
+    }
+
+    /* Stats secondaires (Moyenne, Min, Max...) */
+    .stat-card {
+        background: white;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 4px solid #1f3a68;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        height: 100%;
+    }
+    .stat-card.min { border-left-color: #8b2635; }
+    .stat-card.max { border-left-color: #2d6a5f; }
+    .stat-card.last { border-left-color: #b08742; }
+    .stat-card .stat-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+    }
+    .stat-card .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0d1b2a;
+        line-height: 1;
+    }
+    .stat-card .stat-sub {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 0.3rem;
+        font-style: italic;
+    }
+
+    /* Bandeau d'info */
+    .info-banner {
+        background: linear-gradient(90deg, #f5f7fb 0%, #eef2f8 100%);
+        border-left: 4px solid #1f3a68;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        color: #2c4566;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* Conteneur graphique */
+    .chart-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #f5f7fb 0%, #eef2f8 100%);
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -45,6 +168,7 @@ FC_LO = [103.42, 100.59, 101.83, 104.14]
 FC_HI = [122.62, 121.77, 125.03, 129.30]
 
 NAVY = "#1f3a68"
+NAVY_LIGHT = "#4a6ba0"
 BURGUNDY = "#8b2635"
 TEAL = "#2d6a5f"
 GOLD = "#b08742"
@@ -71,6 +195,56 @@ def decompose(series):
 trend, seasonal, seasonal_full = decompose(IPI)
 
 # ============================================================
+# HELPERS POUR LES CARTES
+# ============================================================
+def kpi_card(label, value, sub, variant=""):
+    return f"""
+    <div class="kpi-card {variant}">
+        <div class="kpi-label">{label}</div>
+        <div class="kpi-value">{value}</div>
+        <div class="kpi-sub">{sub}</div>
+    </div>
+    """
+
+def stat_card(label, value, sub, variant=""):
+    return f"""
+    <div class="stat-card {variant}">
+        <div class="stat-label">{label}</div>
+        <div class="stat-value">{value}</div>
+        <div class="stat-sub">{sub}</div>
+    </div>
+    """
+
+# ============================================================
+# CONFIG GRAPHIQUES
+# ============================================================
+def style_fig(fig, height=500, y_title=""):
+    fig.update_layout(
+        height=height,
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        font=dict(family="sans-serif", size=12, color="#2c4566"),
+        yaxis_title=y_title,
+        xaxis=dict(
+            showgrid=False,
+            tickangle=-45,
+            nticks=12,
+            tickfont=dict(size=11, color="#6b7280"),
+            linecolor="#e8ecf3",
+            linewidth=1
+        ),
+        yaxis=dict(
+            gridcolor='#e8ecf3',
+            tickfont=dict(size=11, color="#6b7280"),
+            linecolor="#e8ecf3",
+            zeroline=False
+        ),
+        margin=dict(t=30, b=70, l=60, r=30),
+        hovermode='x unified'
+    )
+    return fig
+
+# ============================================================
 # SIDEBAR
 # ============================================================
 with st.sidebar:
@@ -92,85 +266,108 @@ with st.sidebar:
 # ============================================================
 if section == "Accueil":
     st.title("Prévision de l'Indice de la Production Industrielle")
-    st.markdown("#### Mauritanie — Période 2011–2025")
-    st.markdown("---")
+    st.markdown("##### Mauritanie · Données trimestrielles 2011–2025 · Modèle SARIMA")
+    st.markdown("")
+
+    # KPI cards en haut
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(kpi_card("MAPE", "3,77 %", "Précision du modèle"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(kpi_card("RMSE", "4,90", "Erreur quadratique", "teal"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(kpi_card("AIC", "306,06", "Critère d'Akaike", "burgundy"), unsafe_allow_html=True)
+    with c4:
+        st.markdown(kpi_card("Observations", "60", "Trimestres 2011–2025", "gold"), unsafe_allow_html=True)
+
+    st.markdown("")
+    st.markdown("")
 
     col1, col2 = st.columns([3, 2])
-
     with col1:
+        st.markdown("## Le projet en bref")
         st.markdown("""
-        ### Le projet en bref
-
         Modélisation et prévision de l'**Indice de la Production Industrielle (IPI)**
-        de la Mauritanie à partir des données trimestrielles de l'**ANSADE**.
+        de la Mauritanie à partir des données trimestrielles publiées par l'**ANSADE**.
 
         ### Méthode
-
         Modèle **SARIMA(0,1,2)(0,1,1)₄** appliqué à 60 observations trimestrielles
         (2011–2025), avec production de prévisions pour les 4 trimestres de 2026.
 
-        ### Cadre
-
-        Projet de Fin d'Études — Licence Professionnelle en Mathématiques Appliquées
-        à l'Économie et à la Finance (**MAEF**), Institut Supérieur de Génie
-        Industriel (**ISGI**) — Stage à l'**ANSADE**.
+        ### Cadre académique
+        Projet de Fin d'Études — **Licence Professionnelle en Mathématiques Appliquées
+        à l'Économie et à la Finance (MAEF)**, Institut Supérieur de Génie Industriel
+        (**ISGI**) — Stage à l'**ANSADE**.
         """)
 
     with col2:
-        st.markdown("### Indicateurs")
-        st.metric("MAPE", "3,77 %")
-        st.metric("RMSE", "4,90")
-        st.metric("AIC", "306,06")
-        st.metric("Observations", "60 trimestres")
+        st.markdown("## En quelques chiffres")
+        st.markdown(stat_card("Période d'étude", "15 ans", "2011 T1 → 2025 T4"), unsafe_allow_html=True)
+        st.markdown("")
+        st.markdown(stat_card("Horizon de prévision", "4 trimestres", "Année 2026 complète", "max"), unsafe_allow_html=True)
+        st.markdown("")
+        st.markdown(stat_card("Fréquence", "Trimestrielle", "m = 4 (saisonnalité)", "last"), unsafe_allow_html=True)
 
 # ============================================================
 # PAGE 2 - ANALYSE ET RESULTATS
 # ============================================================
 elif section == "Analyse et résultats":
     st.title("Analyse et résultats")
-    st.markdown("---")
+    st.markdown("")
 
     # ---- GRAPHIQUE 1 : SERIE + PREVISIONS ----
     st.markdown("## Série historique et prévisions 2026")
     st.markdown("Évolution trimestrielle de l'IPI avec projections SARIMA pour 2026 (intervalle de confiance à 95 %).")
 
     fig1 = go.Figure()
-    fig1.add_trace(go.Scatter(x=PERIODS, y=IPI, mode='lines', name='IPI observé',
-                               line=dict(color=NAVY, width=2.5)))
+    fig1.add_trace(go.Scatter(
+        x=PERIODS, y=IPI, mode='lines', name='IPI observé',
+        line=dict(color=NAVY, width=3),
+        fill='tozeroy', fillcolor='rgba(31,58,104,0.06)'
+    ))
     fc_x = [PERIODS[-1]] + FC_PERIOD
     fc_y = [IPI[-1]] + FC_MEAN
     fc_lo = [IPI[-1]] + FC_LO
     fc_hi = [IPI[-1]] + FC_HI
-    fig1.add_trace(go.Scatter(x=fc_x + fc_x[::-1], y=fc_hi + fc_lo[::-1],
-                               fill='toself', fillcolor='rgba(139,38,53,0.15)',
-                               line=dict(color='rgba(255,255,255,0)'),
-                               name='Intervalle 95 %'))
-    fig1.add_trace(go.Scatter(x=fc_x, y=fc_y, mode='lines+markers', name='Prévision 2026',
-                               line=dict(color=BURGUNDY, width=2.5, dash='dash'),
-                               marker=dict(size=9)))
+    fig1.add_trace(go.Scatter(
+        x=fc_x + fc_x[::-1], y=fc_hi + fc_lo[::-1],
+        fill='toself', fillcolor='rgba(139,38,53,0.18)',
+        line=dict(color='rgba(255,255,255,0)'),
+        name='Intervalle 95 %'
+    ))
+    fig1.add_trace(go.Scatter(
+        x=fc_x, y=fc_y, mode='lines+markers', name='Prévision 2026',
+        line=dict(color=BURGUNDY, width=3, dash='dash'),
+        marker=dict(size=11, color=BURGUNDY, line=dict(color='white', width=2))
+    ))
+    fig1 = style_fig(fig1, height=500, y_title="IPI (base 100 = 2017)")
     fig1.update_layout(
-        height=500, hovermode='x unified', plot_bgcolor='white',
-        yaxis_title="IPI (base 100 = 2017)",
-        xaxis=dict(showgrid=False, tickangle=-45, nticks=15),
-        yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
-        legend=dict(orientation='h', y=1.08, x=0.5, xanchor='center'),
-        margin=dict(t=40, b=80)
+        yaxis=dict(range=[75, 135], gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280")),
+        legend=dict(orientation='h', y=1.08, x=0.5, xanchor='center',
+                    bgcolor='rgba(255,255,255,0.9)', borderwidth=0)
     )
     st.plotly_chart(fig1, use_container_width=True)
 
-    col1, col2, col3, col4 = st.columns(4)
+    # Stats sous le graphique
+    st.markdown("")
     mean_v = sum(IPI) / len(IPI)
-    col1.metric("Moyenne", f"{mean_v:.1f}")
-    col2.metric("Minimum", f"{min(IPI):.1f}", f"au {PERIODS[IPI.index(min(IPI))]}", delta_color="off")
-    col3.metric("Maximum", f"{max(IPI):.1f}", f"au {PERIODS[IPI.index(max(IPI))]}", delta_color="off")
-    col4.metric("Dernière valeur", f"{IPI[-1]:.1f}", f"au {PERIODS[-1]}", delta_color="off")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(stat_card("Moyenne", f"{mean_v:.1f}", "Niveau central"), unsafe_allow_html=True)
+    with c2:
+        st.markdown(stat_card("Minimum", f"{min(IPI):.1f}", f"au {PERIODS[IPI.index(min(IPI))]}", "min"), unsafe_allow_html=True)
+    with c3:
+        st.markdown(stat_card("Maximum", f"{max(IPI):.1f}", f"au {PERIODS[IPI.index(max(IPI))]}", "max"), unsafe_allow_html=True)
+    with c4:
+        st.markdown(stat_card("Dernière valeur", f"{IPI[-1]:.1f}", f"au {PERIODS[-1]}", "last"), unsafe_allow_html=True)
 
     st.markdown("""
-    > Tendance haussière à partir de 2018, creux marqué au T2 2021 (effet Covid-19),
-    > saisonnalité stable : **T2 bas, T4 haut**.
-    """)
-
-    st.markdown("---")
+    <div class="info-banner">
+    <strong>Lecture.</strong> Tendance haussière marquée à partir de 2018,
+    creux significatif au T2 2021 (effet Covid-19), saisonnalité stable :
+    <strong>T2 systématiquement bas, T4 systématiquement haut</strong>.
+    </div>
+    """, unsafe_allow_html=True)
 
     # ---- DECOMPOSITION ----
     st.markdown("## Décomposition de la série")
@@ -178,68 +375,69 @@ elif section == "Analyse et résultats":
 
     st.markdown("### Série observée")
     fig2a = go.Figure()
-    fig2a.add_trace(go.Scatter(x=PERIODS, y=IPI, mode='lines',
-                                line=dict(color=NAVY, width=2.2), showlegend=False))
-    fig2a.update_layout(
-        height=320, plot_bgcolor='white',
-        yaxis_title="IPI",
-        xaxis=dict(showgrid=False, tickangle=-45, nticks=12),
-        yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
-        margin=dict(t=20, b=60, l=60, r=20)
-    )
+    fig2a.add_trace(go.Scatter(
+        x=PERIODS, y=IPI, mode='lines',
+        line=dict(color=NAVY, width=2.5),
+        fill='tozeroy', fillcolor='rgba(31,58,104,0.08)',
+        showlegend=False
+    ))
+    fig2a = style_fig(fig2a, height=320, y_title="IPI")
+    fig2a.update_layout(yaxis=dict(range=[80, 130], gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280")))
     st.plotly_chart(fig2a, use_container_width=True)
 
     st.markdown("### Tendance")
     fig2b = go.Figure()
-    fig2b.add_trace(go.Scatter(x=PERIODS, y=trend, mode='lines',
-                                line=dict(color=TEAL, width=2.2), showlegend=False))
-    fig2b.update_layout(
-        height=320, plot_bgcolor='white',
-        yaxis_title="Tendance",
-        xaxis=dict(showgrid=False, tickangle=-45, nticks=12),
-        yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
-        margin=dict(t=20, b=60, l=60, r=20)
-    )
+    fig2b.add_trace(go.Scatter(
+        x=PERIODS, y=trend, mode='lines',
+        line=dict(color=TEAL, width=3),
+        fill='tozeroy', fillcolor='rgba(45,106,95,0.08)',
+        showlegend=False
+    ))
+    fig2b = style_fig(fig2b, height=320, y_title="Tendance")
+    fig2b.update_layout(yaxis=dict(range=[95, 120], gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280")))
     st.plotly_chart(fig2b, use_container_width=True)
-    st.markdown("> Croissance régulière à partir de 2018.")
+
+    st.markdown("""
+    <div class="info-banner">
+    Croissance régulière à partir de 2018, après une période de stagnation 2011–2017.
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("### Saisonnalité")
     fig2c = go.Figure()
-    fig2c.add_trace(go.Scatter(x=PERIODS, y=seasonal_full, mode='lines',
-                                line=dict(color=GOLD, width=2.2), showlegend=False))
-    fig2c.update_layout(
-        height=320, plot_bgcolor='white',
-        yaxis_title="Saisonnalité",
-        xaxis=dict(showgrid=False, tickangle=-45, nticks=12),
-        yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
-        margin=dict(t=20, b=60, l=60, r=20)
-    )
+    fig2c.add_trace(go.Scatter(
+        x=PERIODS, y=seasonal_full, mode='lines',
+        line=dict(color=GOLD, width=2.5),
+        showlegend=False
+    ))
+    fig2c = style_fig(fig2c, height=320, y_title="Saisonnalité")
     st.plotly_chart(fig2c, use_container_width=True)
 
-    st.markdown("### Effet saisonnier moyen")
+    st.markdown("### Effet saisonnier moyen par trimestre")
     fig2d = go.Figure()
+    colors_bars = [NAVY if v >= 0 else BURGUNDY for v in seasonal]
     fig2d.add_trace(go.Bar(
         x=["T1 (Janv-Mars)", "T2 (Avr-Juin)", "T3 (Juil-Sept)", "T4 (Oct-Déc)"],
         y=seasonal,
-        marker_color=[NAVY if v >= 0 else BURGUNDY for v in seasonal],
+        marker=dict(color=colors_bars, line=dict(color='white', width=2)),
         text=[f"{v:+.2f}" for v in seasonal],
-        textposition='outside', textfont=dict(size=14)
+        textposition='outside',
+        textfont=dict(size=15, color="#2c4566", family="sans-serif"),
+        width=0.6
     ))
+    fig2d = style_fig(fig2d, height=400, y_title="Écart à la moyenne (points)")
     fig2d.update_layout(
-        height=380, plot_bgcolor='white',
-        yaxis_title="Écart à la moyenne (points)",
-        xaxis=dict(showgrid=False),
-        yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
-        margin=dict(t=40, b=40, l=60, r=20)
+        xaxis=dict(showgrid=False, tickfont=dict(size=12, color="#2c4566"), linecolor="#e8ecf3")
     )
     st.plotly_chart(fig2d, use_container_width=True)
 
     st.markdown(f"""
-    > **T4** est le plus dynamique (**{seasonal[3]:+.2f} pts**), **T2** le plus faible
-    > (**{seasonal[1]:+.2f} pts**). Cette saisonnalité justifie le choix d'un modèle SARIMA.
-    """)
-
-    st.markdown("---")
+    <div class="info-banner">
+    <strong>T4</strong> est le plus dynamique ({seasonal[3]:+.2f} pts),
+    <strong>T2</strong> le plus faible ({seasonal[1]:+.2f} pts).
+    Cette saisonnalité justifie le choix d'un modèle SARIMA.
+    </div>
+    """, unsafe_allow_html=True)
 
     # ---- TABLEAU PREVISIONS ----
     st.markdown("## Prévisions 2026")
@@ -256,7 +454,7 @@ elif section == "Analyse et résultats":
             "Prévision": "{:.2f}",
             "Borne inférieure (95 %)": "{:.2f}",
             "Borne supérieure (95 %)": "{:.2f}"
-        }),
+        }).background_gradient(subset=["Prévision"], cmap='Blues'),
         use_container_width=True, hide_index=True
     )
 
@@ -271,7 +469,7 @@ elif section == "Analyse et résultats":
 # ============================================================
 elif section == "Conclusion et limites":
     st.title("Conclusion et limites")
-    st.markdown("---")
+    st.markdown("")
 
     st.markdown("## Conclusion")
     st.markdown("""
@@ -301,7 +499,7 @@ elif section == "Conclusion et limites":
 # ============================================================
 elif section == "À propos":
     st.title("À propos")
-    st.markdown("---")
+    st.markdown("")
 
     st.markdown("### Auteur")
     st.markdown("""
