@@ -454,7 +454,7 @@ elif section == "Analyse et résultats":
             "Prévision": "{:.2f}",
             "Borne inférieure (95 %)": "{:.2f}",
             "Borne supérieure (95 %)": "{:.2f}"
-        }).background_gradient(subset=["Prévision"], cmap='Blues'),
+        }),
         use_container_width=True, hide_index=True
     )
 
