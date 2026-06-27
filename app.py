@@ -13,9 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# ============================================================
-# STYLE GLOBAL
-# ============================================================
 st.markdown("""
 <style>
     .main .block-container {
@@ -23,23 +20,9 @@ st.markdown("""
         padding-bottom: 3rem;
         max-width: 1200px;
     }
-    h1 { font-weight: 600; color: #1a1a1a; }
-    h2 { font-weight: 600; color: #1f3a68; margin-top: 1.5rem; }
-    h3 { font-weight: 500; color: #2c5282; }
-    .stMetric { background-color: #f8f7f3; padding: 12px; border-radius: 6px; }
-    .source-note {
-        font-size: 12px;
-        color: #6b6b6b;
-        font-style: italic;
-        margin-top: 8px;
-    }
-    blockquote {
-        border-left: 3px solid #1f3a68;
-        padding-left: 16px;
-        color: #4a4a4a;
-        font-style: italic;
-        margin: 16px 0;
-    }
+    h1 { font-weight: 600; }
+    h2 { font-weight: 600; margin-top: 1.5rem; }
+    h3 { font-weight: 500; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -100,104 +83,68 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("**Projet de Fin d'Études**")
     st.markdown("Licence Professionnelle MAEF")
-    st.markdown("*Mathématiques Appliquées à l'Économie et à la Finance*")
     st.markdown("---")
-    st.markdown("**Institution**")
-    st.markdown("Institut Supérieur de Génie Industriel (ISGI)")
-    st.markdown("Nouakchott, Mauritanie")
-    st.markdown("---")
-    st.markdown("**Stage**")
-    st.markdown("Agence Nationale de la Statistique")
-    st.markdown("et de l'Analyse Démographique et Économique")
-    st.markdown("*(ANSADE)*")
+    st.markdown("**ISGI** — Nouakchott")
+    st.markdown("**Stage** : ANSADE")
 
 # ============================================================
 # PAGE 1 - ACCUEIL
 # ============================================================
 if section == "Accueil":
     st.title("Prévision de l'Indice de la Production Industrielle")
-    st.markdown("#### République Islamique de Mauritanie — Période 2011–2025")
+    st.markdown("#### Mauritanie — Période 2011–2025")
     st.markdown("---")
-
-    st.markdown("""
-    ### Présentation du projet
-
-    Ce travail s'inscrit dans le cadre du **Projet de Fin d'Études** de la
-    **Licence Professionnelle en Mathématiques Appliquées à l'Économie et à la Finance (MAEF)**,
-    dispensée à l'**Institut Supérieur de Génie Industriel (ISGI)** de Nouakchott.
-
-    Il a été réalisé à l'**Agence Nationale de la Statistique et de l'Analyse Démographique
-    et Économique (ANSADE)**, institution officielle de production statistique en Mauritanie.
-    """)
 
     col1, col2 = st.columns([3, 2])
 
     with col1:
         st.markdown("""
-        ### Problématique
+        ### Le projet en bref
 
-        L'**Indice de la Production Industrielle (IPI)** constitue un indicateur économique
-        majeur pour suivre l'activité du secteur industriel mauritanien.
-        Sa prévision présente un intérêt opérationnel pour la planification publique,
-        l'analyse conjoncturelle et la prise de décision économique.
+        Modélisation et prévision de l'**Indice de la Production Industrielle (IPI)**
+        de la Mauritanie à partir des données trimestrielles de l'**ANSADE**.
 
-        La problématique posée est la suivante :
-        > *Comment modéliser de manière rigoureuse la dynamique de l'IPI mauritanien,
-        > et en produire des prévisions fiables à court terme ?*
+        ### Méthode
 
-        ### Démarche méthodologique
+        Modèle **SARIMA(0,1,2)(0,1,1)₄** appliqué à 60 observations trimestrielles
+        (2011–2025), avec production de prévisions pour les 4 trimestres de 2026.
 
-        L'étude s'appuie sur la **méthodologie de Box-Jenkins** appliquée à une série
-        chronologique trimestrielle de 60 observations couvrant la période 2011–2025 :
+        ### Cadre
 
-        - Analyse exploratoire de la série
-        - Identification d'une tendance et d'une saisonnalité régulière
-        - Spécification d'un modèle **SARIMA(0,1,2)(0,1,1)₄**
-        - Estimation et validation du modèle
-        - Production de prévisions ponctuelles et par intervalles pour l'année 2026
+        Projet de Fin d'Études — Licence Professionnelle en Mathématiques Appliquées
+        à l'Économie et à la Finance (**MAEF**), Institut Supérieur de Génie
+        Industriel (**ISGI**) — Stage à l'**ANSADE**.
         """)
 
     with col2:
-        st.markdown("### Indicateurs de performance")
-        st.metric("MAPE", "3,77 %", help="Mean Absolute Percentage Error")
-        st.metric("RMSE", "4,90", help="Root Mean Square Error")
-        st.metric("AIC", "306,06", help="Critère d'information d'Akaike")
-        st.metric("Observations", "60", help="Trimestres observés")
-
-    st.markdown("---")
-    st.markdown("""
-    *Utilisez le menu de navigation à gauche pour parcourir les différentes sections du tableau de bord.*
-    """)
+        st.markdown("### Indicateurs")
+        st.metric("MAPE", "3,77 %")
+        st.metric("RMSE", "4,90")
+        st.metric("AIC", "306,06")
+        st.metric("Observations", "60 trimestres")
 
 # ============================================================
 # PAGE 2 - ANALYSE ET RESULTATS
 # ============================================================
 elif section == "Analyse et résultats":
-    st.title("Analyse de la série et résultats")
-    st.markdown("Présentation graphique de la série historique, de sa décomposition et des prévisions issues du modèle SARIMA.")
+    st.title("Analyse et résultats")
     st.markdown("---")
 
     # ---- GRAPHIQUE 1 : SERIE + PREVISIONS ----
-    st.markdown("## 1. Série historique et prévisions 2026")
-    st.markdown("""
-    Le graphique ci-dessous présente l'évolution trimestrielle de l'IPI mauritanien sur la période 2011–2025,
-    ainsi que les prévisions issues du modèle SARIMA pour les quatre trimestres de l'année 2026.
-    La zone en grisé rouge représente l'intervalle de confiance à 95 % autour de la prévision ponctuelle.
-    """)
+    st.markdown("## Série historique et prévisions 2026")
+    st.markdown("Évolution trimestrielle de l'IPI avec projections SARIMA pour 2026 (intervalle de confiance à 95 %).")
 
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=PERIODS, y=IPI, mode='lines', name='IPI observé',
                                line=dict(color=NAVY, width=2.5)))
-
     fc_x = [PERIODS[-1]] + FC_PERIOD
     fc_y = [IPI[-1]] + FC_MEAN
     fc_lo = [IPI[-1]] + FC_LO
     fc_hi = [IPI[-1]] + FC_HI
-
     fig1.add_trace(go.Scatter(x=fc_x + fc_x[::-1], y=fc_hi + fc_lo[::-1],
                                fill='toself', fillcolor='rgba(139,38,53,0.15)',
                                line=dict(color='rgba(255,255,255,0)'),
-                               name='Intervalle de confiance 95 %'))
+                               name='Intervalle 95 %'))
     fig1.add_trace(go.Scatter(x=fc_x, y=fc_y, mode='lines+markers', name='Prévision 2026',
                                line=dict(color=BURGUNDY, width=2.5, dash='dash'),
                                marker=dict(size=9)))
@@ -219,26 +166,17 @@ elif section == "Analyse et résultats":
     col4.metric("Dernière valeur", f"{IPI[-1]:.1f}", f"au {PERIODS[-1]}", delta_color="off")
 
     st.markdown("""
-    > **Observation.** La série de l'IPI mauritanien présente une **tendance haussière** marquée à partir de 2018,
-    > après une période de relative stagnation entre 2011 et 2017. Un creux significatif est observé au deuxième
-    > trimestre 2021 (87,8 points), attribuable aux effets de la pandémie de Covid-19 sur l'activité industrielle.
-    > Le profil saisonnier de la série est stable sur l'ensemble de la période : le deuxième trimestre est
-    > systématiquement le plus faible, tandis que le quatrième trimestre constitue le pic annuel.
+    > Tendance haussière à partir de 2018, creux marqué au T2 2021 (effet Covid-19),
+    > saisonnalité stable : **T2 bas, T4 haut**.
     """)
 
     st.markdown("---")
 
     # ---- DECOMPOSITION ----
-    st.markdown("## 2. Décomposition de la série")
-    st.markdown("""
-    Avant d'appliquer le modèle SARIMA, la série a été décomposée en ses composantes structurelles
-    selon le schéma additif **Y(t) = T(t) + S(t) + ε(t)**,
-    où T(t) désigne la tendance, S(t) la composante saisonnière, et ε(t) le résidu.
-    La décomposition repose sur une moyenne mobile centrée d'ordre 4.
-    """)
+    st.markdown("## Décomposition de la série")
+    st.markdown("Décomposition additive : **Y(t) = Tendance + Saisonnalité + Résidu**.")
 
-    # Graphique 2a - Serie observee
-    st.markdown("### 2.1 Série observée")
+    st.markdown("### Série observée")
     fig2a = go.Figure()
     fig2a.add_trace(go.Scatter(x=PERIODS, y=IPI, mode='lines',
                                 line=dict(color=NAVY, width=2.2), showlegend=False))
@@ -251,12 +189,7 @@ elif section == "Analyse et résultats":
     )
     st.plotly_chart(fig2a, use_container_width=True)
 
-    # Graphique 2b - Tendance
-    st.markdown("### 2.2 Composante de tendance")
-    st.markdown("""
-    La tendance, estimée par moyenne mobile centrée d'ordre 4, isole la dynamique de long terme
-    en éliminant les fluctuations saisonnières et les chocs de court terme.
-    """)
+    st.markdown("### Tendance")
     fig2b = go.Figure()
     fig2b.add_trace(go.Scatter(x=PERIODS, y=trend, mode='lines',
                                 line=dict(color=TEAL, width=2.2), showlegend=False))
@@ -268,17 +201,9 @@ elif section == "Analyse et résultats":
         margin=dict(t=20, b=60, l=60, r=20)
     )
     st.plotly_chart(fig2b, use_container_width=True)
-    st.markdown("""
-    > La tendance révèle une croissance régulière à partir de 2018,
-    > avec un léger fléchissement en fin de période (2025).
-    """)
+    st.markdown("> Croissance régulière à partir de 2018.")
 
-    # Graphique 2c - Saisonnalite
-    st.markdown("### 2.3 Composante saisonnière")
-    st.markdown("""
-    La composante saisonnière mesure les variations cycliques régulières d'un trimestre à l'autre.
-    Son amplitude stable confirme la pertinence d'une modélisation saisonnière.
-    """)
+    st.markdown("### Saisonnalité")
     fig2c = go.Figure()
     fig2c.add_trace(go.Scatter(x=PERIODS, y=seasonal_full, mode='lines',
                                 line=dict(color=GOLD, width=2.2), showlegend=False))
@@ -291,9 +216,7 @@ elif section == "Analyse et résultats":
     )
     st.plotly_chart(fig2c, use_container_width=True)
 
-    # Effet saisonnier moyen
-    st.markdown("### 2.4 Effet saisonnier moyen par trimestre")
-    st.markdown("Ce graphique synthétise l'écart moyen de chaque trimestre par rapport à la tendance.")
+    st.markdown("### Effet saisonnier moyen")
     fig2d = go.Figure()
     fig2d.add_trace(go.Bar(
         x=["T1 (Janv-Mars)", "T2 (Avr-Juin)", "T3 (Juil-Sept)", "T4 (Oct-Déc)"],
@@ -304,7 +227,7 @@ elif section == "Analyse et résultats":
     ))
     fig2d.update_layout(
         height=380, plot_bgcolor='white',
-        yaxis_title="Écart à la moyenne (points d'indice)",
+        yaxis_title="Écart à la moyenne (points)",
         xaxis=dict(showgrid=False),
         yaxis=dict(gridcolor='rgba(0,0,0,0.08)'),
         margin=dict(t=40, b=40, l=60, r=20)
@@ -312,17 +235,14 @@ elif section == "Analyse et résultats":
     st.plotly_chart(fig2d, use_container_width=True)
 
     st.markdown(f"""
-    > **Lecture.** Le quatrième trimestre (T4) est structurellement le plus dynamique avec un effet positif de
-    > **{seasonal[3]:+.2f} points** par rapport à la tendance, tandis que le deuxième trimestre (T2) est le plus faible
-    > avec un effet de **{seasonal[1]:+.2f} points**. Cette saisonnalité régulière justifie pleinement le recours à un
-    > modèle SARIMA, qui intègre explicitement la composante saisonnière par différenciation d'ordre 4.
+    > **T4** est le plus dynamique (**{seasonal[3]:+.2f} pts**), **T2** le plus faible
+    > (**{seasonal[1]:+.2f} pts**). Cette saisonnalité justifie le choix d'un modèle SARIMA.
     """)
 
     st.markdown("---")
 
     # ---- TABLEAU PREVISIONS ----
-    st.markdown("## 3. Prévisions ponctuelles 2026")
-    st.markdown("Le tableau ci-dessous présente les valeurs prédites pour chaque trimestre de 2026, accompagnées de leurs bornes de confiance à 95 %.")
+    st.markdown("## Prévisions 2026")
 
     df = pd.DataFrame({
         "Trimestre": FC_PERIOD,
@@ -340,15 +260,7 @@ elif section == "Analyse et résultats":
         use_container_width=True, hide_index=True
     )
 
-    st.markdown("### Modèle retenu")
-    st.markdown("**SARIMA(0,1,2)(0,1,1)₄** — *Seasonal AutoRegressive Integrated Moving Average*")
-    st.markdown("""
-    - 60 observations trimestrielles couvrant la période 2011 T1 → 2025 T4
-    - Différenciation régulière d'ordre 1 (d=1) pour éliminer la tendance
-    - Différenciation saisonnière d'ordre 1 (D=1) pour neutraliser la saisonnalité
-    - Période saisonnière m = 4 (données trimestrielles)
-    - Composantes moyennes mobiles régulière (q=2) et saisonnière (Q=1)
-    """)
+    st.markdown("**Modèle retenu** : SARIMA(0,1,2)(0,1,1)₄ — 60 observations, période saisonnière m = 4.")
 
     csv = df.to_csv(index=False, sep=";").encode("utf-8")
     st.download_button("Télécharger les prévisions (CSV)", csv,
@@ -358,79 +270,30 @@ elif section == "Analyse et résultats":
 # PAGE 3 - CONCLUSION ET LIMITES
 # ============================================================
 elif section == "Conclusion et limites":
-    st.title("Conclusion et limites de l'étude")
+    st.title("Conclusion et limites")
     st.markdown("---")
 
     st.markdown("## Conclusion")
     st.markdown("""
-    Ce travail a permis de modéliser et de prévoir l'Indice de la Production Industrielle de la
-    Mauritanie à partir d'une série trimestrielle de 60 observations couvrant la période 2011–2025.
-    L'application de la **méthodologie de Box-Jenkins** a conduit à retenir un modèle
-    **SARIMA(0,1,2)(0,1,1)₄**, qui prend en compte à la fois la tendance haussière de long terme
-    et la saisonnalité trimestrielle régulière observée dans les données.
-
-    Les principaux résultats obtenus sont les suivants :
-
-    - Le modèle estimé présente une **erreur moyenne en pourcentage absolu (MAPE) de 3,77 %**,
-      témoignant d'une bonne qualité d'ajustement aux données historiques.
-    - L'erreur quadratique moyenne (RMSE) s'établit à **4,90 points d'indice**, ce qui reste
-      faible au regard de la dispersion observée de la série.
-    - Les **prévisions pour l'année 2026** indiquent un profil saisonnier conforme aux trimestres
-      antérieurs, avec un point bas attendu au deuxième trimestre (111,2) et un pic au quatrième
-      trimestre (116,7).
-    - Les intervalles de confiance à 95 % s'élargissent progressivement avec l'horizon de
-      prévision, traduisant l'incertitude croissante au-delà du court terme.
-
-    Sur le plan opérationnel, ces prévisions peuvent constituer un **outil d'aide à la décision**
-    pour les institutions économiques mauritaniennes (ANSADE, Ministère des Finances, Banque
-    Centrale), en éclairant l'analyse conjoncturelle et la planification de court terme.
+    - Le modèle **SARIMA(0,1,2)(0,1,1)₄** capture bien la dynamique de l'IPI mauritanien.
+    - **MAPE de 3,77 %** : bonne qualité d'ajustement.
+    - Prévisions 2026 cohérentes avec le profil saisonnier observé (T2 bas, T4 haut).
+    - Outil utile pour l'**analyse conjoncturelle** et la planification à court terme.
     """)
 
-    st.markdown("---")
-    st.markdown("## Limites de l'étude")
+    st.markdown("## Limites")
     st.markdown("""
-    Malgré les résultats encourageants obtenus, plusieurs limites méritent d'être soulignées :
-
-    **Taille de l'échantillon.** L'étude repose sur 60 observations trimestrielles, ce qui
-    correspond à un horizon temporel de quinze années. Bien que suffisant pour une modélisation
-    SARIMA, ce volume reste modeste et peut affecter la précision des estimations,
-    notamment pour les paramètres saisonniers.
-
-    **Approche univariée.** Le modèle SARIMA ne prend en compte que la dynamique propre de la
-    série, sans intégrer de **variables explicatives exogènes** susceptibles d'influencer
-    l'IPI (prix du pétrole, taux de change, demande mondiale, indices sectoriels).
-    Une extension naturelle consisterait à mobiliser un modèle SARIMAX ou un modèle vectoriel
-    autorégressif (VAR).
-
-    **Hypothèse de stabilité structurelle.** Le modèle suppose que la dynamique observée sur
-    la période 2011–2025 se prolonge en 2026. Or, l'économie mauritanienne est sensible à
-    des chocs externes (pandémie, fluctuations des matières premières) qui peuvent provoquer
-    des **ruptures structurelles** non capturées par le modèle.
-
-    **Horizon de prévision limité.** Les prévisions ont été produites à un horizon de quatre
-    trimestres. Au-delà, l'élargissement des intervalles de confiance réduit fortement la
-    pertinence opérationnelle des projections.
-
-    **Absence de comparaison multi-modèles.** Le modèle SARIMA a été retenu sur la base des
-    critères d'information classiques (AIC, BIC) et de la qualité des résidus.
-    Une comparaison systématique avec d'autres familles de modèles (Holt-Winters, ETS,
-    lissage exponentiel, réseaux de neurones récurrents) permettrait d'évaluer plus rigoureusement
-    son avantage relatif.
+    - **Échantillon modeste** : 60 observations trimestrielles seulement.
+    - **Approche univariée** : aucune variable exogène (pétrole, taux de change…).
+    - **Horizon court** : prévisions fiables sur 4 trimestres maximum.
+    - **Stabilité supposée** : ruptures structurelles possibles non prises en compte.
     """)
 
-    st.markdown("---")
     st.markdown("## Perspectives")
     st.markdown("""
-    Ce travail ouvre plusieurs pistes de prolongement :
-
-    - **Enrichissement du modèle** par l'introduction de variables exogènes pertinentes pour
-      l'économie mauritanienne (indices sectoriels, conjoncture régionale, prix internationaux).
-    - **Mise à jour régulière du modèle** à mesure que de nouvelles observations trimestrielles
-      deviennent disponibles, afin de maintenir sa pertinence prédictive.
-    - **Comparaison avec d'autres approches** de prévision (modèles de lissage, méthodes
-      d'apprentissage automatique) pour évaluer le rapport coût-précision de chaque méthode.
-    - **Désagrégation sectorielle** : appliquer la même démarche aux sous-indices de production
-      (industrie extractive, industries manufacturières, énergie) afin d'affiner l'analyse.
+    - Étendre à un modèle **SARIMAX** avec variables exogènes.
+    - Comparer avec d'autres méthodes (**Holt-Winters**, **ETS**).
+    - **Mettre à jour** le modèle à mesure des nouvelles publications de l'ANSADE.
     """)
 
 # ============================================================
@@ -440,83 +303,35 @@ elif section == "À propos":
     st.title("À propos")
     st.markdown("---")
 
-    st.markdown("## L'auteur")
+    st.markdown("### Auteur")
     st.markdown("""
     **Oumar Abou DIA**
-
-    Étudiant en **Licence Professionnelle en Mathématiques Appliquées à l'Économie et à la
-    Finance (MAEF)** à l'Institut Supérieur de Génie Industriel (ISGI) de Nouakchott,
-    promotion 2025–2026.
-
-    Ce projet constitue mon **Projet de Fin d'Études** (PFE), réalisé dans le cadre d'un
-    stage de fin de cycle à l'Agence Nationale de la Statistique et de l'Analyse
-    Démographique et Économique (ANSADE).
-
-    Mes domaines d'intérêt couvrent la **statistique appliquée**, l'**économétrie des séries
-    temporelles**, la **finance quantitative** et la **science des données** appliquée aux
-    problématiques économiques.
+    Étudiant en Licence Professionnelle MAEF — promotion 2025–2026.
     """)
 
-    st.markdown("---")
-    st.markdown("## L'établissement de formation")
+    st.markdown("### Formation")
     st.markdown("""
-    **Institut Supérieur de Génie Industriel (ISGI)**
-
-    L'ISGI, anciennement Institut Universitaire Professionnel (IUP), est un établissement
-    d'enseignement supérieur situé à Nouakchott, en Mauritanie. Il propose des formations
-    professionnalisantes en sciences appliquées, en gestion et en mathématiques appliquées.
-
-    La **Licence Professionnelle MAEF** offre une formation pluridisciplinaire à l'intersection
-    des mathématiques, de la statistique, de l'économie et de la finance. Elle prépare ses
-    diplômés aux métiers d'analyste statistique, de chargé d'études économiques, ou à la
-    poursuite d'études en master de statistique, d'économétrie ou de finance quantitative.
+    **Licence Professionnelle en Mathématiques Appliquées à l'Économie et à la Finance (MAEF)**
+    Institut Supérieur de Génie Industriel (ISGI) — Nouakchott, Mauritanie.
     """)
 
-    st.markdown("---")
-    st.markdown("## La structure d'accueil")
+    st.markdown("### Stage")
     st.markdown("""
     **Agence Nationale de la Statistique et de l'Analyse Démographique et Économique (ANSADE)**
-
-    L'ANSADE est l'**institution officielle en charge de la production statistique** en
-    République Islamique de Mauritanie. Elle assure la collecte, le traitement, l'analyse
-    et la diffusion des données statistiques nationales dans les domaines économique,
-    démographique et social.
-
-    À ce titre, l'ANSADE produit notamment l'**Indice de la Production Industrielle (IPI)**,
-    objet de la présente étude, ainsi que les principaux indicateurs macroéconomiques du pays.
+    Institution officielle de production statistique en Mauritanie.
     """)
 
-    st.markdown("---")
-    st.markdown("## Encadrement du projet")
-
+    st.markdown("### Encadrement")
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("**Encadrement académique**")
-        st.markdown("**M. Merbe**")
-        st.markdown("*Institut Supérieur de Génie Industriel (ISGI)*")
-        st.markdown("Encadrant pédagogique et superviseur méthodologique du projet de fin d'études.")
-
+        st.markdown("**Académique**")
+        st.markdown("M. Merbe *(ISGI)*")
     with col2:
-        st.markdown("**Encadrement professionnel**")
-        st.markdown("**M. Diop** · **M. Zeine**")
-        st.markdown("*Agence Nationale de la Statistique et de l'Analyse Démographique et Économique (ANSADE)*")
-        st.markdown("Encadrants professionnels lors du stage à l'ANSADE.")
+        st.markdown("**Professionnel**")
+        st.markdown("M. Diop · M. Zeine *(ANSADE)*")
 
-    st.markdown("---")
-    st.markdown("## Ressources du projet")
+    st.markdown("### Ressources")
     st.markdown("""
-    Le code source de ce tableau de bord est disponible publiquement sur GitHub :
-    [github.com/diaomar22/pfe-dashboard](https://github.com/diaomar22/pfe-dashboard)
-
-    Le tableau de bord est hébergé sur Streamlit Community Cloud :
-    [ipi-mauritanie.streamlit.app](https://ipi-mauritanie.streamlit.app)
+    - Code source : [github.com/diaomar22/pfe-dashboard](https://github.com/diaomar22/pfe-dashboard)
+    - Dashboard en ligne : [ipi-mauritanie.streamlit.app](https://ipi-mauritanie.streamlit.app)
     """)
-
-    st.markdown("---")
-    st.markdown("""
-    <div style='text-align: center; color: #6b6b6b; font-size: 13px; padding: 20px 0;'>
-    Tableau de bord réalisé dans le cadre du Projet de Fin d'Études<br>
-    Licence Professionnelle en Mathématiques Appliquées à l'Économie et à la Finance — Promotion 2025–2026<br>
-    Institut Supérieur de Génie Industriel · Nouakchott, Mauritanie
-    </div>
-    """, unsafe_allow_html=True)
