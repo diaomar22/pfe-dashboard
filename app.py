@@ -1,6 +1,7 @@
 """
 Dashboard PFE - Prevision de l'IPI mauritanien par modele SARIMA
 Oumar Abou DIA - Licence Professionnelle MAEF, ISGI - Stage ANSADE
+Soutenance : Juillet 2026
 """
 
 import streamlit as st
@@ -15,18 +16,15 @@ st.set_page_config(
 )
 
 # ============================================================
-# STYLE GLOBAL - look premium
+# STYLE GLOBAL
 # ============================================================
 st.markdown("""
 <style>
-    /* Container principal */
     .main .block-container {
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 3rem;
         max-width: 1300px;
     }
-
-    /* Typographie */
     h1 {
         font-weight: 700;
         color: #0d1b2a;
@@ -44,7 +42,119 @@ st.markdown("""
         color: #2c4566;
     }
 
-    /* Cartes KPI à dégradé */
+    /* En-tete institutionnel */
+    .institutional-header {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e8ecf3;
+        padding: 1.1rem 1.4rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .institutional-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e8ecf3;
+        margin-bottom: 12px;
+    }
+    .institutional-text-block { flex: 1; }
+    .institutional-eyebrow {
+        font-size: 10.5px;
+        color: #6b7280;
+        letter-spacing: 1.5px;
+        margin: 0;
+        font-weight: 600;
+    }
+    .institutional-line {
+        font-size: 13px;
+        color: #0d1b2a;
+        margin: 3px 0 0;
+        font-weight: 500;
+    }
+    .institutional-right {
+        text-align: right;
+        font-size: 11px;
+        color: #6b7280;
+    }
+    .institutional-right p { margin: 2px 0; }
+    .institutional-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #0d1b2a;
+        letter-spacing: -0.3px;
+        line-height: 1.2;
+    }
+    .institutional-tagline {
+        margin: 6px 0 0;
+        color: #4a5d75;
+        font-size: 14px;
+        font-style: italic;
+    }
+
+    /* Bandeau resultat principal */
+    .result-banner {
+        background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%);
+        border-radius: 12px;
+        border: 1px solid #d6e3f5;
+        padding: 1.4rem 1.6rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 12px rgba(31, 58, 104, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .result-banner-text { flex: 1; min-width: 280px; }
+    .result-banner-eyebrow {
+        font-size: 11px;
+        color: #1f3a68;
+        letter-spacing: 1.5px;
+        margin: 0 0 8px;
+        font-weight: 700;
+    }
+    .result-banner-main {
+        font-size: 26px;
+        font-weight: 600;
+        margin: 0 0 6px;
+        color: #0d1b2a;
+        line-height: 1.25;
+    }
+    .result-banner-main .accent {
+        color: #1f3a68;
+        font-weight: 700;
+    }
+    .result-banner-sub {
+        font-size: 14px;
+        color: #5a6473;
+        margin: 0;
+    }
+    .quarter-pills {
+        display: flex;
+        gap: 14px;
+        padding: 12px 16px;
+        background: #eef4fc;
+        border-radius: 10px;
+        border: 1px solid #d6e3f5;
+    }
+    .quarter-pill { text-align: center; padding: 0 4px; }
+    .quarter-pill-label {
+        font-size: 10px;
+        color: #1f3a68;
+        margin: 0 0 4px;
+        letter-spacing: 1.2px;
+        font-weight: 700;
+    }
+    .quarter-pill-value {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        color: #1f3a68;
+    }
+
+    /* Cartes KPI a degrade */
     .kpi-card {
         background: linear-gradient(135deg, #1f3a68 0%, #2c5282 100%);
         padding: 1.5rem;
@@ -53,8 +163,6 @@ st.markdown("""
         box-shadow: 0 4px 20px rgba(31, 58, 104, 0.25);
         text-align: left;
         height: 100%;
-        position: relative;
-        overflow: hidden;
     }
     .kpi-card.gold {
         background: linear-gradient(135deg, #b08742 0%, #d4a157 100%);
@@ -72,26 +180,29 @@ st.markdown("""
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        opacity: 0.85;
+        opacity: 0.9;
         margin-bottom: 0.5rem;
         font-weight: 600;
+        color: white;
     }
     .kpi-card .kpi-value {
         font-size: 2.2rem;
         font-weight: 700;
         line-height: 1;
         margin-bottom: 0.3rem;
+        color: white;
     }
     .kpi-card .kpi-sub {
         font-size: 12px;
-        opacity: 0.8;
+        opacity: 0.85;
         font-style: italic;
+        color: white;
     }
 
-    /* Stats secondaires (Moyenne, Min, Max...) */
+    /* Stats secondaires */
     .stat-card {
         background: white;
-        padding: 1.2rem;
+        padding: 1.1rem;
         border-radius: 10px;
         border-left: 4px solid #1f3a68;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -101,15 +212,15 @@ st.markdown("""
     .stat-card.max { border-left-color: #2d6a5f; }
     .stat-card.last { border-left-color: #b08742; }
     .stat-card .stat-label {
-        font-size: 11px;
+        font-size: 10.5px;
         text-transform: uppercase;
         letter-spacing: 1px;
         color: #6b7280;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 0.4rem;
     }
     .stat-card .stat-value {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
         font-weight: 700;
         color: #0d1b2a;
         line-height: 1;
@@ -132,15 +243,7 @@ st.markdown("""
         font-size: 14px;
         line-height: 1.6;
     }
-
-    /* Conteneur graphique */
-    .chart-container {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        margin-bottom: 1.5rem;
-    }
+    .info-banner strong { color: #0d1b2a; }
 
     /* Sidebar */
     [data-testid="stSidebar"] {
@@ -148,6 +251,20 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# ============================================================
+# DRAPEAU MAURITANIEN (SVG)
+# ============================================================
+FLAG_SVG = """
+<svg width="50" height="34" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg"
+     style="border-radius: 3px; border: 1px solid #e8ecf3; display: block; flex-shrink: 0;">
+    <rect width="300" height="200" fill="#00A95C"/>
+    <rect width="300" height="20" fill="#D01C1F"/>
+    <rect y="180" width="300" height="20" fill="#D01C1F"/>
+    <polygon points="150,75 156.3,93.5 175.8,93.5 160.1,105 166.4,123.5 150,112 133.6,123.5 139.9,105 124.2,93.5 143.7,93.5" fill="#FFD700"/>
+    <path d="M 80 110 Q 150 200 220 110 Q 150 165 80 110 Z" fill="#FFD700"/>
+</svg>
+"""
 
 # ============================================================
 # DONNEES
@@ -166,9 +283,9 @@ FC_PERIOD = ["2026 T1", "2026 T2", "2026 T3", "2026 T4"]
 FC_MEAN = [113.02, 111.18, 113.43, 116.72]
 FC_LO = [103.42, 100.59, 101.83, 104.14]
 FC_HI = [122.62, 121.77, 125.03, 129.30]
+FC_AVG = sum(FC_MEAN) / 4  # 113.59
 
 NAVY = "#1f3a68"
-NAVY_LIGHT = "#4a6ba0"
 BURGUNDY = "#8b2635"
 TEAL = "#2d6a5f"
 GOLD = "#b08742"
@@ -195,8 +312,44 @@ def decompose(series):
 trend, seasonal, seasonal_full = decompose(IPI)
 
 # ============================================================
-# HELPERS POUR LES CARTES
+# COMPOSANTS HTML
 # ============================================================
+def institutional_header():
+    return f"""
+    <div class="institutional-header">
+        <div class="institutional-row">
+            {FLAG_SVG}
+            <div class="institutional-text-block">
+                <p class="institutional-eyebrow">RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</p>
+                <p class="institutional-line">ANSADE · ISGI · Licence Professionnelle MAEF</p>
+            </div>
+            <div class="institutional-right">
+                <p><strong style="color:#0d1b2a;">PFE 2025–2026</strong></p>
+                <p>Soutenance · Juillet 2026</p>
+            </div>
+        </div>
+        <h1 class="institutional-title">Prévision de l'Indice de la Production Industrielle</h1>
+        <p class="institutional-tagline">Outil d'aide à la décision conjoncturelle — Modèle SARIMA(0,1,2)(0,1,1)₄</p>
+    </div>
+    """
+
+def result_banner():
+    return f"""
+    <div class="result-banner">
+        <div class="result-banner-text">
+            <p class="result-banner-eyebrow">RÉSULTAT PRINCIPAL · ANNÉE 2026</p>
+            <p class="result-banner-main">IPI moyen attendu de <span class="accent">{FC_AVG:.1f} pts</span></p>
+            <p class="result-banner-sub">avec un pic au quatrième trimestre à 116,7 points</p>
+        </div>
+        <div class="quarter-pills">
+            <div class="quarter-pill"><p class="quarter-pill-label">T1</p><p class="quarter-pill-value">113,0</p></div>
+            <div class="quarter-pill"><p class="quarter-pill-label">T2</p><p class="quarter-pill-value">111,2</p></div>
+            <div class="quarter-pill"><p class="quarter-pill-label">T3</p><p class="quarter-pill-value">113,4</p></div>
+            <div class="quarter-pill"><p class="quarter-pill-label">T4</p><p class="quarter-pill-value">116,7</p></div>
+        </div>
+    </div>
+    """
+
 def kpi_card(label, value, sub, variant=""):
     return f"""
     <div class="kpi-card {variant}">
@@ -226,18 +379,13 @@ def style_fig(fig, height=500, y_title=""):
         font=dict(family="sans-serif", size=12, color="#2c4566"),
         yaxis_title=y_title,
         xaxis=dict(
-            showgrid=False,
-            tickangle=-45,
-            nticks=12,
+            showgrid=False, tickangle=-45, nticks=12,
             tickfont=dict(size=11, color="#6b7280"),
-            linecolor="#e8ecf3",
-            linewidth=1
+            linecolor="#e8ecf3", linewidth=1
         ),
         yaxis=dict(
-            gridcolor='#e8ecf3',
-            tickfont=dict(size=11, color="#6b7280"),
-            linecolor="#e8ecf3",
-            zeroline=False
+            gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280"),
+            linecolor="#e8ecf3", zeroline=False
         ),
         margin=dict(t=30, b=70, l=60, r=30),
         hovermode='x unified'
@@ -260,16 +408,16 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("**ISGI** — Nouakchott")
     st.markdown("**Stage** : ANSADE")
+    st.markdown("---")
+    st.markdown("*Soutenance : Juillet 2026*")
 
 # ============================================================
 # PAGE 1 - ACCUEIL
 # ============================================================
 if section == "Accueil":
-    st.title("Prévision de l'Indice de la Production Industrielle")
-    st.markdown("##### Mauritanie · Données trimestrielles 2011–2025 · Modèle SARIMA")
-    st.markdown("")
+    st.markdown(institutional_header(), unsafe_allow_html=True)
+    st.markdown(result_banner(), unsafe_allow_html=True)
 
-    # KPI cards en haut
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.markdown(kpi_card("MAPE", "3,77 %", "Précision du modèle"), unsafe_allow_html=True)
@@ -315,20 +463,54 @@ elif section == "Analyse et résultats":
     st.title("Analyse et résultats")
     st.markdown("")
 
-    # ---- GRAPHIQUE 1 : SERIE + PREVISIONS ----
+    # ---- GRAPHIQUE 1 : SERIE + PREVISIONS AVEC ANNOTATIONS ----
     st.markdown("## Série historique et prévisions 2026")
-    st.markdown("Évolution trimestrielle de l'IPI avec projections SARIMA pour 2026 (intervalle de confiance à 95 %).")
+    st.markdown("Évolution trimestrielle de l'IPI avec annotations contextuelles. La zone orange marque la période Covid-19, la zone bleue marque la phase de prévision.")
 
     fig1 = go.Figure()
+
+    # Zone Covid (avril 2020 - decembre 2021 : indices 37 a 43 environ)
+    fig1.add_vrect(
+        x0="2020 T1", x1="2021 T4",
+        fillcolor="rgba(216, 90, 48, 0.10)",
+        line_width=0,
+        annotation_text="Période Covid-19",
+        annotation_position="top",
+        annotation=dict(font=dict(size=11, color="#993C1D", family="sans-serif"))
+    )
+
+    # Zone prevision
+    fig1.add_vrect(
+        x0=PERIODS[-1], x1=FC_PERIOD[-1],
+        fillcolor="rgba(31, 58, 104, 0.08)",
+        line_width=0,
+        annotation_text="Prévisions SARIMA",
+        annotation_position="top",
+        annotation=dict(font=dict(size=11, color="#1f3a68", family="sans-serif"))
+    )
+
+    # Ligne verticale "AUJOURD'HUI"
+    fig1.add_vline(
+        x=PERIODS[-1],
+        line=dict(color="#6b7280", width=1.5, dash="dash"),
+        annotation_text="AUJOURD'HUI",
+        annotation_position="top right",
+        annotation=dict(font=dict(size=10, color="#6b7280", family="sans-serif"))
+    )
+
+    # Serie observee
     fig1.add_trace(go.Scatter(
         x=PERIODS, y=IPI, mode='lines', name='IPI observé',
         line=dict(color=NAVY, width=3),
         fill='tozeroy', fillcolor='rgba(31,58,104,0.06)'
     ))
+
+    # Intervalle de confiance et prevision
     fc_x = [PERIODS[-1]] + FC_PERIOD
     fc_y = [IPI[-1]] + FC_MEAN
     fc_lo = [IPI[-1]] + FC_LO
     fc_hi = [IPI[-1]] + FC_HI
+
     fig1.add_trace(go.Scatter(
         x=fc_x + fc_x[::-1], y=fc_hi + fc_lo[::-1],
         fill='toself', fillcolor='rgba(139,38,53,0.18)',
@@ -340,10 +522,35 @@ elif section == "Analyse et résultats":
         line=dict(color=BURGUNDY, width=3, dash='dash'),
         marker=dict(size=11, color=BURGUNDY, line=dict(color='white', width=2))
     ))
-    fig1 = style_fig(fig1, height=500, y_title="IPI (base 100 = 2017)")
+
+    # Annotation : creux Covid (T2 2021)
+    fig1.add_annotation(
+        x="2021 T2", y=87.8,
+        ax=0, ay=60,
+        text="<b>Creux Covid-19</b><br>87,8 points",
+        showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.5,
+        arrowcolor="#8b2635",
+        font=dict(size=11, color="#8b2635", family="sans-serif"),
+        bgcolor="rgba(255,255,255,0.9)",
+        bordercolor="#8b2635", borderwidth=1, borderpad=4
+    )
+
+    # Annotation : maximum historique
+    fig1.add_annotation(
+        x="2024 T3", y=122.7,
+        ax=0, ay=-50,
+        text="<b>Maximum historique</b><br>122,7 points",
+        showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.5,
+        arrowcolor="#2d6a5f",
+        font=dict(size=11, color="#2d6a5f", family="sans-serif"),
+        bgcolor="rgba(255,255,255,0.9)",
+        bordercolor="#2d6a5f", borderwidth=1, borderpad=4
+    )
+
+    fig1 = style_fig(fig1, height=540, y_title="IPI (base 100 = 2017)")
     fig1.update_layout(
-        yaxis=dict(range=[75, 135], gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280")),
-        legend=dict(orientation='h', y=1.08, x=0.5, xanchor='center',
+        yaxis=dict(range=[75, 138], gridcolor='#e8ecf3', tickfont=dict(size=11, color="#6b7280")),
+        legend=dict(orientation='h', y=-0.15, x=0.5, xanchor='center',
                     bgcolor='rgba(255,255,255,0.9)', borderwidth=0)
     )
     st.plotly_chart(fig1, use_container_width=True)
@@ -523,10 +730,10 @@ elif section == "À propos":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Académique**")
-        st.markdown("M. Merbe *(ISGI)*")
+        st.markdown("Dr. Benioug Merbe *(ISGI)*")
     with col2:
         st.markdown("**Professionnel**")
-        st.markdown("M. Diop · M. Zeine *(ANSADE)*")
+        st.markdown("M. Ezyn SEGNANE · M. Mamadou DIOP *(ANSADE)*")
 
     st.markdown("### Ressources")
     st.markdown("""
