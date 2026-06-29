@@ -315,40 +315,41 @@ trend, seasonal, seasonal_full = decompose(IPI)
 # COMPOSANTS HTML
 # ============================================================
 def institutional_header():
-    return f"""
-    <div class="institutional-header">
-        <div class="institutional-row">
-            {FLAG_SVG}
-            <div class="institutional-text-block">
-                <p class="institutional-eyebrow">RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</p>
-                <p class="institutional-line">ANSADE · ISGI · Licence Professionnelle MAEF</p>
-            </div>
-            <div class="institutional-right">
-                <p><strong style="color:#0d1b2a;">PFE 2025–2026</strong></p>
-                <p>Soutenance · Juillet 2026</p>
-            </div>
-        </div>
-        <h1 class="institutional-title">Prévision de l'Indice de la Production Industrielle</h1>
-        <p class="institutional-tagline">Outil d'aide à la décision conjoncturelle — Modèle SARIMA(0,1,2)(0,1,1)₄</p>
-    </div>
-    """
+    flag_compact = FLAG_SVG.replace('\n', '').replace('    ', '')
+    return (
+        '<div class="institutional-header">'
+        '<div class="institutional-row">'
+        f'{flag_compact}'
+        '<div class="institutional-text-block">'
+        '<p class="institutional-eyebrow">RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</p>'
+        '<p class="institutional-line">ANSADE · ISGI · Licence Professionnelle MAEF</p>'
+        '</div>'
+        '<div class="institutional-right">'
+        '<p><strong style="color:#0d1b2a;">PFE 2025–2026</strong></p>'
+        '<p>Soutenance · Juillet 2026</p>'
+        '</div>'
+        '</div>'
+        '<h1 class="institutional-title">Prévision de l\'Indice de la Production Industrielle</h1>'
+        '<p class="institutional-tagline">Outil d\'aide à la décision conjoncturelle — Modèle SARIMA(0,1,2)(0,1,1)₄</p>'
+        '</div>'
+    )
 
 def result_banner():
-    return f"""
-    <div class="result-banner">
-        <div class="result-banner-text">
-            <p class="result-banner-eyebrow">RÉSULTAT PRINCIPAL · ANNÉE 2026</p>
-            <p class="result-banner-main">IPI moyen attendu de <span class="accent">{FC_AVG:.1f} pts</span></p>
-            <p class="result-banner-sub">avec un pic au quatrième trimestre à 116,7 points</p>
-        </div>
-        <div class="quarter-pills">
-            <div class="quarter-pill"><p class="quarter-pill-label">T1</p><p class="quarter-pill-value">113,0</p></div>
-            <div class="quarter-pill"><p class="quarter-pill-label">T2</p><p class="quarter-pill-value">111,2</p></div>
-            <div class="quarter-pill"><p class="quarter-pill-label">T3</p><p class="quarter-pill-value">113,4</p></div>
-            <div class="quarter-pill"><p class="quarter-pill-label">T4</p><p class="quarter-pill-value">116,7</p></div>
-        </div>
-    </div>
-    """
+    return (
+        '<div class="result-banner">'
+        '<div class="result-banner-text">'
+        '<p class="result-banner-eyebrow">RÉSULTAT PRINCIPAL · ANNÉE 2026</p>'
+        f'<p class="result-banner-main">IPI moyen attendu de <span class="accent">{FC_AVG:.1f} pts</span></p>'
+        '<p class="result-banner-sub">avec un pic au quatrième trimestre à 116,7 points</p>'
+        '</div>'
+        '<div class="quarter-pills">'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T1</p><p class="quarter-pill-value">113,0</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T2</p><p class="quarter-pill-value">111,2</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T3</p><p class="quarter-pill-value">113,4</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T4</p><p class="quarter-pill-value">116,7</p></div>'
+        '</div>'
+        '</div>'
+    )
 
 def kpi_card(label, value, sub, variant=""):
     return f"""
@@ -469,9 +470,11 @@ elif section == "Analyse et résultats":
 
     fig1 = go.Figure()
 
-    # Zone Covid (avril 2020 - decembre 2021 : indices 37 a 43 environ)
+    # Zone Covid (2020 T1 = index 36, 2021 T4 = index 43)
+    covid_start_idx = PERIODS.index("2020 T1")
+    covid_end_idx = PERIODS.index("2021 T4")
     fig1.add_vrect(
-        x0="2020 T1", x1="2021 T4",
+        x0=covid_start_idx, x1=covid_end_idx,
         fillcolor="rgba(216, 90, 48, 0.10)",
         line_width=0,
         annotation_text="Période Covid-19",
@@ -479,9 +482,11 @@ elif section == "Analyse et résultats":
         annotation=dict(font=dict(size=11, color="#993C1D", family="sans-serif"))
     )
 
-    # Zone prevision
+    # Zone prevision (dernier index observé jusqu'à la fin)
+    last_obs_idx = len(PERIODS) - 1
+    forecast_end_idx = len(PERIODS) + len(FC_PERIOD) - 1
     fig1.add_vrect(
-        x0=PERIODS[-1], x1=FC_PERIOD[-1],
+        x0=last_obs_idx, x1=forecast_end_idx,
         fillcolor="rgba(31, 58, 104, 0.08)",
         line_width=0,
         annotation_text="Prévisions SARIMA",
@@ -491,7 +496,7 @@ elif section == "Analyse et résultats":
 
     # Ligne verticale "AUJOURD'HUI"
     fig1.add_vline(
-        x=PERIODS[-1],
+        x=last_obs_idx,
         line=dict(color="#6b7280", width=1.5, dash="dash"),
         annotation_text="AUJOURD'HUI",
         annotation_position="top right",
@@ -523,9 +528,10 @@ elif section == "Analyse et résultats":
         marker=dict(size=11, color=BURGUNDY, line=dict(color='white', width=2))
     ))
 
-    # Annotation : creux Covid (T2 2021)
+    # Annotation : creux Covid (T2 2021 = index 41)
+    covid_low_idx = PERIODS.index("2021 T2")
     fig1.add_annotation(
-        x="2021 T2", y=87.8,
+        x=covid_low_idx, y=87.8,
         ax=0, ay=60,
         text="<b>Creux Covid-19</b><br>87,8 points",
         showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.5,
@@ -535,9 +541,10 @@ elif section == "Analyse et résultats":
         bordercolor="#8b2635", borderwidth=1, borderpad=4
     )
 
-    # Annotation : maximum historique
+    # Annotation : maximum historique (T3 2024)
+    max_idx = PERIODS.index("2024 T3")
     fig1.add_annotation(
-        x="2024 T3", y=122.7,
+        x=max_idx, y=122.7,
         ax=0, ay=-50,
         text="<b>Maximum historique</b><br>122,7 points",
         showarrow=True, arrowhead=2, arrowsize=1, arrowwidth=1.5,
