@@ -1,6 +1,6 @@
 """
 Dashboard PFE - Prevision de l'IPI mauritanien par modele SARIMA
-Oumar Abou DIA - Licence Professionnelle MAEF, ISGI - Stage ANSADE
+Oumar Abou DIA - Licence Professionnelle MAEF, IUP - Stage ANSADE
 Soutenance : Juillet 2026
 """
 
@@ -280,10 +280,10 @@ IPI = [92.8, 84.2, 95.6, 96.8, 88.7, 93.8, 95.0, 106.2,
 
 PERIODS = [f"{y} T{q}" for y in range(2011, 2026) for q in range(1, 5)]
 FC_PERIOD = ["2026 T1", "2026 T2", "2026 T3", "2026 T4"]
-FC_MEAN = [113.02, 111.18, 113.43, 116.72]
-FC_LO = [103.42, 100.59, 101.83, 104.14]
-FC_HI = [122.62, 121.77, 125.03, 129.30]
-FC_AVG = sum(FC_MEAN) / 4  # 113.59
+FC_MEAN = [113.27, 111.47, 114.04, 115.94]
+FC_LO = [103.02, 99.20, 100.63, 101.47]
+FC_HI = [123.53, 123.74, 127.46, 130.41]
+FC_AVG = sum(FC_MEAN) / 4  # 113.68
 
 NAVY = "#1f3a68"
 BURGUNDY = "#8b2635"
@@ -322,7 +322,7 @@ def institutional_header():
         f'{flag_compact}'
         '<div class="institutional-text-block">'
         '<p class="institutional-eyebrow">RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</p>'
-        '<p class="institutional-line">ANSADE · ISGI · Licence Professionnelle MAEF</p>'
+        '<p class="institutional-line">ANSADE · IUP · Licence Professionnelle MAEF</p>'
         '</div>'
         '<div class="institutional-right">'
         '<p><strong style="color:#0d1b2a;">PFE 2025–2026</strong></p>'
@@ -330,7 +330,7 @@ def institutional_header():
         '</div>'
         '</div>'
         '<h1 class="institutional-title">Prévision de l\'Indice de la Production Industrielle</h1>'
-        '<p class="institutional-tagline">Outil d\'aide à la décision conjoncturelle — Modèle SARIMA(0,1,2)(0,1,1)₄</p>'
+        '<p class="institutional-tagline">Outil d\'aide à la décision conjoncturelle, modèle SARIMA(0,1,2)(0,1,1)₄</p>'
         '</div>'
     )
 
@@ -340,13 +340,13 @@ def result_banner():
         '<div class="result-banner-text">'
         '<p class="result-banner-eyebrow">RÉSULTAT PRINCIPAL · ANNÉE 2026</p>'
         f'<p class="result-banner-main">IPI moyen attendu de <span class="accent">{FC_AVG:.1f} pts</span></p>'
-        '<p class="result-banner-sub">avec un pic au quatrième trimestre à 116,7 points</p>'
+        '<p class="result-banner-sub">avec un pic au quatrième trimestre à 115,9 points</p>'
         '</div>'
         '<div class="quarter-pills">'
-        '<div class="quarter-pill"><p class="quarter-pill-label">T1</p><p class="quarter-pill-value">113,0</p></div>'
-        '<div class="quarter-pill"><p class="quarter-pill-label">T2</p><p class="quarter-pill-value">111,2</p></div>'
-        '<div class="quarter-pill"><p class="quarter-pill-label">T3</p><p class="quarter-pill-value">113,4</p></div>'
-        '<div class="quarter-pill"><p class="quarter-pill-label">T4</p><p class="quarter-pill-value">116,7</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T1</p><p class="quarter-pill-value">113,3</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T2</p><p class="quarter-pill-value">111,5</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T3</p><p class="quarter-pill-value">114,0</p></div>'
+        '<div class="quarter-pill"><p class="quarter-pill-label">T4</p><p class="quarter-pill-value">115,9</p></div>'
         '</div>'
         '</div>'
     )
@@ -407,7 +407,7 @@ with st.sidebar:
     st.markdown("**Projet de Fin d'Études**")
     st.markdown("Licence Professionnelle MAEF")
     st.markdown("---")
-    st.markdown("**ISGI** — Nouakchott")
+    st.markdown("**IUP**, Nouakchott")
     st.markdown("**Stage** : ANSADE")
     st.markdown("---")
     st.markdown("*Soutenance : Juillet 2026*")
@@ -421,11 +421,11 @@ if section == "Accueil":
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.markdown(kpi_card("MAPE", "3,77 %", "Précision du modèle"), unsafe_allow_html=True)
+        st.markdown(kpi_card("MAPE", "3,83 %", "Précision du modèle"), unsafe_allow_html=True)
     with c2:
-        st.markdown(kpi_card("RMSE", "4,90", "Erreur quadratique", "teal"), unsafe_allow_html=True)
+        st.markdown(kpi_card("RMSE", "4,97", "Erreur quadratique", "teal"), unsafe_allow_html=True)
     with c3:
-        st.markdown(kpi_card("AIC", "306,06", "Critère d'Akaike", "burgundy"), unsafe_allow_html=True)
+        st.markdown(kpi_card("AIC", "327,49", "Critère d'Akaike", "burgundy"), unsafe_allow_html=True)
     with c4:
         st.markdown(kpi_card("Observations", "60", "Trimestres 2011–2025", "gold"), unsafe_allow_html=True)
 
@@ -444,9 +444,9 @@ if section == "Accueil":
         (2011–2025), avec production de prévisions pour les 4 trimestres de 2026.
 
         ### Cadre académique
-        Projet de Fin d'Études — **Licence Professionnelle en Mathématiques Appliquées
-        à l'Économie et à la Finance (MAEF)**, Institut Supérieur de Génie Industriel
-        (**ISGI**) — Stage à l'**ANSADE**.
+        Projet de Fin d'Études, **Licence Professionnelle en Mathématiques Appliquées
+        à l'Économie et à la Finance (MAEF)**, Institut Universitaire Professionnel
+        (**IUP**), stage à l'**ANSADE**.
         """)
 
     with col2:
@@ -470,8 +470,8 @@ elif section == "Analyse et résultats":
 
     fig1 = go.Figure()
 
-    # Zone Covid (2020 T1 = index 36, 2021 T4 = index 43)
-    covid_start_idx = PERIODS.index("2020 T1")
+    # Zone Covid (2021 T1 = index 40, 2021 T4 = index 43)
+    covid_start_idx = PERIODS.index("2021 T1")
     covid_end_idx = PERIODS.index("2021 T4")
     fig1.add_vrect(
         x0=covid_start_idx, x1=covid_end_idx,
@@ -672,7 +672,7 @@ elif section == "Analyse et résultats":
         use_container_width=True, hide_index=True
     )
 
-    st.markdown("**Modèle retenu** : SARIMA(0,1,2)(0,1,1)₄ — 60 observations, période saisonnière m = 4.")
+    st.markdown("**Modèle retenu** : SARIMA(0,1,2)(0,1,1)₄, 60 observations, période saisonnière m = 4.")
 
     csv = df.to_csv(index=False, sep=";").encode("utf-8")
     st.download_button("Télécharger les prévisions (CSV)", csv,
@@ -688,7 +688,7 @@ elif section == "Conclusion et limites":
     st.markdown("## Conclusion")
     st.markdown("""
     - Le modèle **SARIMA(0,1,2)(0,1,1)₄** capture bien la dynamique de l'IPI mauritanien.
-    - **MAPE de 3,77 %** : bonne qualité d'ajustement.
+    - **MAPE de 3,83 %** : bonne qualité d'ajustement.
     - Prévisions 2026 cohérentes avec le profil saisonnier observé (T2 bas, T4 haut).
     - Outil utile pour l'**analyse conjoncturelle** et la planification à court terme.
     """)
@@ -718,13 +718,13 @@ elif section == "À propos":
     st.markdown("### Auteur")
     st.markdown("""
     **Oumar Abou DIA**
-    Étudiant en Licence Professionnelle MAEF — promotion 2025–2026.
+    Étudiant en Licence Professionnelle MAEF, promotion 2025–2026.
     """)
 
     st.markdown("### Formation")
     st.markdown("""
     **Licence Professionnelle en Mathématiques Appliquées à l'Économie et à la Finance (MAEF)**
-    Institut Supérieur de Génie Industriel (ISGI) — Nouakchott, Mauritanie.
+    Institut Universitaire Professionnel (IUP), Nouakchott, Mauritanie.
     """)
 
     st.markdown("### Stage")
@@ -737,7 +737,7 @@ elif section == "À propos":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Académique**")
-        st.markdown("Dr. Benioug Merbe *(ISGI)*")
+        st.markdown("Dr. Benioug Merbe *(IUP)*")
     with col2:
         st.markdown("**Professionnel**")
         st.markdown("M. Ezyn SEGNANE · M. Mamadou DIOP *(ANSADE)*")
